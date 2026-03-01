@@ -296,9 +296,9 @@
 
     <div id="admin-panel" class="admin-panel">
         <h3>獎項庫存設定</h3>
-        <label>頭獎數量：</label><input type="number" id="input-count1" value="1"><br><br>
-        <label>二獎數量：</label><input type="number" id="input-count2" value="3"><br><br>
-        <label>三獎數量：</label><input type="number" id="input-count3" value="5"><br><br>
+        <label>頭獎數量：</label><input type="number" id="input-count1" value="2"><br><br>
+        <label>二獎數量：</label><input type="number" id="input-count2" value="20"><br><br>
+        <label>三獎數量：</label><input type="number" id="input-count3" value="30"><br><br>
         <button onclick="saveSettings()">儲存並重設</button>
         <button onclick="toggleAdmin()" style="background:#777">取消</button>
     </div>
@@ -314,10 +314,21 @@
     <script>
         // 初始化資料
         let data = JSON.parse(localStorage.getItem('gashapon_data')) || {
-            count1: 1,
-            count2: 3,
-            count3: 5,
+            count1: 2,
+            count2: 20,
+            count3: 30,
         };
+        if (typeof data.count3 !== 'number' || isNaN(data.count1)) {
+            data.count1 = 2;
+        }
+        if (typeof data.count3 !== 'number' || isNaN(data.count2)) {
+            data.count2 = 20;
+        }
+
+        // 確保 count3 一定有值
+        if (typeof data.count3 !== 'number' || isNaN(data.count3)) {
+            data.count3 = 30;
+        }
 
         const handleBtn = document.getElementById('handle-btn');
         const machineNode = document.getElementById('machine-node');
@@ -373,15 +384,15 @@
                 let result = "";
                 let color = "";
 
-                if (rand <= 3 && data.count1 > 0) { // 5% 機率頭獎
+                if (rand < 3 && data.count1 > 0) { // 3% 機率頭獎
                     result = "頭獎";
                     color = "gold";
                     data.count1--;
-                } else if (rand <= 15 && data.count2 > 0) { // 12% 機率二獎
+                } else if (rand < 15 && data.count2 > 0) { // 12% 機率二獎
                     result = "二獎";
                     color = "silver";
                     data.count2--;
-                } else if (rand <= 40 && data.count3 > 0) { // 25% 機率三獎
+                } else if (rand < 40 && data.count3 > 0) { // 25% 機率三獎
                     result = "三獎";
                     color = "#c0c0c0";
                     data.count3--;
@@ -424,9 +435,9 @@
             const c1 = parseInt(document.getElementById('input-count1').value);
             const c2 = parseInt(document.getElementById('input-count2').value);
             const c3 = parseInt(document.getElementById('input-count3').value);
-            data.count1 = c1;
-            data.count2 = c2;
-            data.count3 = c3;
+            data.count1 = isNaN(c1) ? 0 : c1;
+            data.count2 = isNaN(c2) ? 0 : c2;
+            data.count3 = isNaN(c3) ? 0 : c3;
 
             updateUI();
             toggleAdmin();
